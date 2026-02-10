@@ -64,4 +64,26 @@ export const bookingsApi = {
   async updateStatus(id: string, status: Booking['status']): Promise<Booking> {
     return this.update(id, { status });
   },
+
+  async updatePaymentScreenshot(id: string, screenshotUrl: string): Promise<Booking> {
+    return this.update(id, { 
+      payment_screenshot: screenshotUrl,
+      payment_status: 'pending'
+    });
+  },
+
+  async updatePaymentStatus(
+    id: string, 
+    status: 'pending' | 'verified' | 'rejected'
+  ): Promise<Booking> {
+    const updates: BookingUpdate = { 
+      payment_status: status 
+    };
+    
+    if (status === 'verified') {
+      updates.payment_verified_at = new Date().toISOString();
+    }
+    
+    return this.update(id, updates);
+  },
 };

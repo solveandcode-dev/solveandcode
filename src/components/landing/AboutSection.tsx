@@ -2,9 +2,9 @@ import { Award, BookOpen, Clock, Heart } from "lucide-react";
 
 const AboutSection = () => {
   const highlights = [
-    { icon: BookOpen, label: "Years of Teaching", value: "5+" },
-    { icon: Award, label: "Students Mentored", value: "100+" },
-    { icon: Clock, label: "Hours of Training", value: "1000+" },
+    { icon: BookOpen, label: "Years of Coding", value: "5+" },
+    { icon: Award, label: "Production Projects", value: "10+" },
+    { icon: Clock, label: "AI/ML Technologies", value: "5+" },
     { icon: Heart, label: "Student Rating", value: "4.9/5" },
   ];
 

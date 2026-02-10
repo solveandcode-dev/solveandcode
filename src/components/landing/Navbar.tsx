@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Code, Menu, X } from "lucide-react";
 
 interface NavbarProps {
-  onBookDemo: () => void;
+  // No props needed anymore
 }
 
-const Navbar = ({ onBookDemo }: NavbarProps) => {
+const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -43,8 +43,8 @@ const Navbar = ({ onBookDemo }: NavbarProps) => {
 
           {/* CTA Button */}
           <div className="flex items-center gap-4">
-            <Button className="hidden sm:inline-flex gradient-primary" onClick={onBookDemo}>
-              Book Demo
+            <Button className="hidden sm:inline-flex gradient-primary" asChild>
+              <a href="#pricing">Book Demo</a>
             </Button>
             
             {/* Mobile Menu Toggle */}
@@ -73,11 +73,8 @@ const Navbar = ({ onBookDemo }: NavbarProps) => {
                   {link.label}
                 </a>
               ))}
-              <Button className="gradient-primary w-full mt-2" onClick={() => {
-                onBookDemo();
-                setIsMobileMenuOpen(false);
-              }}>
-                Book Demo
+              <Button className="gradient-primary w-full mt-2" asChild onClick={() => setIsMobileMenuOpen(false)}>
+                <a href="#pricing">Book Demo</a>
               </Button>
             </nav>
           </div>

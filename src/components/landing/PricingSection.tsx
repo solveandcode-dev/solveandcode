@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Check, Sparkles } from "lucide-react";
 
 interface PricingSectionProps {
-  onBookDemo: () => void;
+  onBookDemo: (plan?: { name: string; price: string; qrCode: string }) => void;
 }
 
 const PricingSection = ({ onBookDemo }: PricingSectionProps) => {
@@ -14,6 +14,7 @@ const PricingSection = ({ onBookDemo }: PricingSectionProps) => {
       price: "₹200",
       period: "one-time",
       description: "Try before you commit",
+      qrCode: "/gpay-qr-200.jpeg",
       features: [
         "1 hour live session",
         "Experience the teaching style",
@@ -28,6 +29,7 @@ const PricingSection = ({ onBookDemo }: PricingSectionProps) => {
       price: "₹500",
       period: "per day",
       description: "Daily payments for 7 days",
+      qrCode: "/gpay-qr-500.jpeg",
       features: [
         "7 daily sessions",
         "Python fundamentals",
@@ -43,6 +45,7 @@ const PricingSection = ({ onBookDemo }: PricingSectionProps) => {
       price: "₹12,000",
       period: "per month",
       description: "Best value for serious learners",
+      qrCode: "/gpay-qr-12000.jpeg",
       features: [
         "~24 sessions per month",
         "Complete curriculum access",
@@ -109,7 +112,11 @@ const PricingSection = ({ onBookDemo }: PricingSectionProps) => {
                 <Button 
                   className={`w-full ${plan.popular ? "gradient-primary" : ""}`}
                   variant={plan.popular ? "default" : "outline"}
-                  onClick={onBookDemo}
+                  onClick={() => onBookDemo({
+                    name: plan.name,
+                    price: plan.price,
+                    qrCode: plan.qrCode,
+                  })}
                 >
                   {plan.cta}
                 </Button>

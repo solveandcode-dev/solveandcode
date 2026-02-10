@@ -19,6 +19,8 @@ const bookingSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   phone: z.string().min(10, "Please enter a valid phone number"),
   education: z.string().min(1, "Please select your education level"),
+  primarySchool: z.string().optional(),
+  secondarySchool: z.string().optional(),
   preferredDate: z.string().min(1, "Please select a preferred date"),
   preferredTime: z.string().min(1, "Please select a preferred time"),
   language: z.enum(["english", "hindi"], { required_error: "Please select a language" }),
@@ -30,9 +32,15 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 interface BookingFormProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: (bookingId: string) => void;
+  selectedPlan?: {
+    name: string;
+    price: string;
+    qrCode: string;
+  } | null;
 }
 
-const BookingForm = ({ isOpen, onClose }: BookingFormProps) => {
+const BookingForm = ({ isOpen, onClose, onSuccess, selectedPlan }: BookingFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<BookingFormData>({
@@ -42,6 +50,8 @@ const BookingForm = ({ isOpen, onClose }: BookingFormProps) => {
       email: "",
       phone: "",
       education: "",
+      primarySchool: "",
+      secondarySchool: "",
       preferredDate: "",
       preferredTime: "",
       language: undefined,
@@ -53,11 +63,13 @@ const BookingForm = ({ isOpen, onClose }: BookingFormProps) => {
     setIsSubmitting(true);
     
     try {
-      await bookingsApi.create({
+      const booking = await bookingsApi.create({
         name: data.name,
         email: data.email,
         phone: data.phone,
         education: data.education,
+        primary_school: data.primarySchool || null,
+        secondary_school: data.secondarySchool || null,
         preferred_date: data.preferredDate,
         preferred_time: data.preferredTime,
         language: data.language,
@@ -69,7 +81,13 @@ const BookingForm = ({ isOpen, onClose }: BookingFormProps) => {
       });
       
       form.reset();
-      onClose();
+      
+      // Call onSuccess to trigger payment modal if a plan was selected
+      if (onSuccess) {
+        onSuccess(booking.id);
+      } else {
+        onClose();
+      }
     } catch (error) {
       console.error("Booking error:", error);
       toast.error("Failed to submit booking. Please try again.");
@@ -92,6 +110,8 @@ const BookingForm = ({ isOpen, onClose }: BookingFormProps) => {
   ];
 
   const educationLevels = [
+    "Primary School Student",
+    "Secondary School Student",
     "High School Student",
     "Undergraduate Student",
     "Graduate Student",
@@ -203,6 +223,45 @@ const BookingForm = ({ isOpen, onClose }: BookingFormProps) => {
                           ))}
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* School Information */}
+              <div className="grid sm:grid-cols-2 gap-4">
+                {/* Primary School */}
+                <FormField
+                  control={form.control}
+                  name="primarySchool"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <GraduationCap className="w-4 h-4" />
+                        Primary School (Optional)
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your primary school name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Secondary School */}
+                <FormField
+                  control={form.control}
+                  name="secondarySchool"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <GraduationCap className="w-4 h-4" />
+                        Secondary School (Optional)
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your secondary school name" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

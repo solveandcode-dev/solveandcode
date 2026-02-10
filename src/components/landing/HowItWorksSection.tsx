@@ -11,7 +11,7 @@ const HowItWorksSection = ({ onBookDemo }: HowItWorksSectionProps) => {
       icon: CalendarCheck,
       step: "01",
       title: "Book a Demo Class",
-      description: "Experience a free/low-cost trial session to see if we're a good fit.",
+      description: "Experience a trial session to see if we're a good fit.",
     },
     {
       icon: Zap,

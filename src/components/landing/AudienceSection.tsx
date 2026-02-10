@@ -6,7 +6,7 @@ const AudienceSection = () => {
     {
       icon: BookOpen,
       title: "School Students",
-      description: "High school students (6th-12th grade) wanting to learn programming and build a strong foundation early.",
+      description: "Primary (1st-5th grade) and Secondary (6th-12th grade) school students wanting to learn programming and build a strong foundation early.",
       color: "primary",
     },
     {

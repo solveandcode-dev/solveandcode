@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Code, Users, Target, Sparkles } from "lucide-react";
 
 interface HeroSectionProps {
-  onBookDemo: () => void;
+  // No props needed anymore
 }
 
-const HeroSection = ({ onBookDemo }: HeroSectionProps) => {
+const HeroSection = () => {
   return (
     <section className="relative gradient-hero min-h-[90vh] flex items-center">
       <div className="container mx-auto px-4 py-16 lg:py-24">
@@ -49,8 +49,8 @@ const HeroSection = ({ onBookDemo }: HeroSectionProps) => {
             </div>
             
             <div className="flex flex-wrap gap-4 pt-4">
-              <Button size="lg" className="gradient-primary text-lg px-8" onClick={onBookDemo}>
-                Book Free Demo Class
+              <Button size="lg" className="gradient-primary text-lg px-8" asChild>
+                <a href="#pricing">Book Demo Class</a>
               </Button>
               <Button size="lg" variant="outline" className="text-lg px-8" asChild>
                 <a href="#curriculum">View Curriculum</a>

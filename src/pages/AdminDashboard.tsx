@@ -9,9 +9,10 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
-import { LogOut, RefreshCw, Trash2, Edit, Calendar, Users, Clock, CheckCircle } from 'lucide-react';
+import { LogOut, RefreshCw, Trash2, Edit, Calendar, Users, Clock, CheckCircle, Eye, XCircle as XCircleIcon, Image as ImageIcon } from 'lucide-react';
 import EditBookingDialog from '@/components/admin/EditBookingDialog';
 import DeleteBookingDialog from '@/components/admin/DeleteBookingDialog';
+import PaymentScreenshotModal from '@/components/admin/PaymentScreenshotModal';
 
 const statusColors: Record<BookingStatus, string> = {
   pending: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
@@ -20,11 +21,18 @@ const statusColors: Record<BookingStatus, string> = {
   cancelled: 'bg-red-500/10 text-red-600 border-red-500/20',
 };
 
+const paymentStatusColors = {
+  pending: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
+  verified: 'bg-green-500/10 text-green-600 border-green-500/20',
+  rejected: 'bg-red-500/10 text-red-600 border-red-500/20',
+};
+
 const AdminDashboard = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
   const [deletingBooking, setDeletingBooking] = useState<Booking | null>(null);
+  const [viewingPayment, setViewingPayment] = useState<Booking | null>(null);
   const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -66,6 +74,20 @@ const AdminDashboard = () => {
     }
   };
 
+  const handlePaymentVerification = async (id: string, status: 'verified' | 'rejected') => {
+    try {
+      await bookingsApi.updatePaymentStatus(id, status);
+      setBookings(bookings.map(b => 
+        b.id === id ? { ...b, payment_status: status, payment_verified_at: status === 'verified' ? new Date().toISOString() : b.payment_verified_at } : b
+      ));
+      toast.success(`Payment ${status}`);
+      setViewingPayment(null);
+    } catch (error) {
+      toast.error('Failed to update payment status');
+      console.error(error);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     try {
       await bookingsApi.delete(id);
@@ -100,6 +122,8 @@ const AdminDashboard = () => {
     pending: bookings.filter(b => b.status === 'pending').length,
     confirmed: bookings.filter(b => b.status === 'confirmed').length,
     completed: bookings.filter(b => b.status === 'completed').length,
+    paymentPending: bookings.filter(b => b.payment_status === 'pending').length,
+    paymentVerified: bookings.filter(b => b.payment_status === 'verified').length,
   };
 
   if (authLoading) {
@@ -135,7 +159,7 @@ const AdminDashboard = () => {
 
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -180,6 +204,28 @@ const AdminDashboard = () => {
               <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
             </CardContent>
           </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Payment Pending
+              </CardTitle>
+              <ImageIcon className="w-4 h-4 text-yellow-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-yellow-600">{stats.paymentPending}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Payment Verified
+              </CardTitle>
+              <CheckCircle className="w-4 h-4 text-green-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">{stats.paymentVerified}</div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Bookings Table */}
@@ -206,6 +252,7 @@ const AdminDashboard = () => {
                       <TableHead>Date & Time</TableHead>
                       <TableHead>Education</TableHead>
                       <TableHead>Language</TableHead>
+                      <TableHead>Payment</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -231,6 +278,44 @@ const AdminDashboard = () => {
                           <Badge variant="outline">
                             {booking.language === 'hindi' ? 'Hindi' : 'English'}
                           </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="space-y-1">
+                            <Badge className={paymentStatusColors[booking.payment_status]} variant="outline">
+                              {booking.payment_status}
+                            </Badge>
+                            {booking.payment_screenshot && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setViewingPayment(booking)}
+                                className="w-full"
+                              >
+                                <Eye className="w-3 h-3 mr-1" />
+                                View
+                              </Button>
+                            )}
+                            {booking.payment_screenshot && booking.payment_status === 'pending' && (
+                              <div className="flex gap-1">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handlePaymentVerification(booking.id, 'verified')}
+                                  className="text-green-600 hover:text-green-700 flex-1"
+                                >
+                                  <CheckCircle className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handlePaymentVerification(booking.id, 'rejected')}
+                                  className="text-red-600 hover:text-red-700 flex-1"
+                                >
+                                  <XCircleIcon className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <Select
@@ -296,6 +381,16 @@ const AdminDashboard = () => {
           booking={deletingBooking}
           onClose={() => setDeletingBooking(null)}
           onConfirm={() => handleDelete(deletingBooking.id)}
+        />
+      )}
+
+      {/* Payment Screenshot Modal */}
+      {viewingPayment && (
+        <PaymentScreenshotModal
+          booking={viewingPayment}
+          isOpen={!!viewingPayment}
+          onClose={() => setViewingPayment(null)}
+          onVerify={(status) => handlePaymentVerification(viewingPayment.id, status)}
         />
       )}
     </div>
