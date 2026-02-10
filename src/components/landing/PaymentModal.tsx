@@ -174,6 +174,60 @@ const PaymentModal = ({
             </div>
           </div>
 
+          {/* UPI App Buttons */}
+          <div className="space-y-3">
+            <p className="text-sm font-medium">Quick Pay with UPI Apps:</p>
+            <div className="grid grid-cols-3 gap-3">
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-2 h-auto py-3"
+                onClick={() => {
+                  const amount = planName.includes("200") ? "200" : planName.includes("500") ? "500" : "12000";
+                  const upiUrl = `gpay://upi/pay?pa=${upiId}&pn=Solve%20%26%20Code&am=${amount}&cu=INR&tn=Payment%20for%20${encodeURIComponent(planName)}`;
+                  window.location.href = upiUrl;
+                }}
+              >
+                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xs">
+                  G
+                </div>
+                <span className="text-xs">GPay</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-2 h-auto py-3"
+                onClick={() => {
+                  const amount = planName.includes("200") ? "200" : planName.includes("500") ? "500" : "12000";
+                  const upiUrl = `phonepe://pay?pa=${upiId}&pn=Solve%20%26%20Code&am=${amount}&cu=INR&tn=Payment%20for%20${encodeURIComponent(planName)}`;
+                  window.location.href = upiUrl;
+                }}
+              >
+                <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-xs">
+                  P
+                </div>
+                <span className="text-xs">PhonePe</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="flex flex-col items-center gap-2 h-auto py-3"
+                onClick={() => {
+                  const amount = planName.includes("200") ? "200" : planName.includes("500") ? "500" : "12000";
+                  const upiUrl = `paytmmp://pay?pa=${upiId}&pn=Solve%20%26%20Code&am=${amount}&cu=INR&tn=Payment%20for%20${encodeURIComponent(planName)}`;
+                  window.location.href = upiUrl;
+                }}
+              >
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs">
+                  P
+                </div>
+                <span className="text-xs">Paytm</span>
+              </Button>
+            </div>
+            <p className="text-xs text-center text-muted-foreground">
+              Click to open in your UPI app with pre-filled details
+            </p>
+          </div>
+
           {/* Screenshot Upload */}
           <div className="space-y-3">
             <p className="text-sm font-medium">Upload Payment Screenshot: <span className="text-red-500">*</span></p>
