@@ -133,7 +133,9 @@ const BookingForm = ({ isOpen, onClose, onSuccess, selectedPlan }: BookingFormPr
           >
             <X className="w-5 h-5" />
           </Button>
-          <CardTitle className="text-2xl text-gradient">Book Your Demo Class</CardTitle>
+          <CardTitle className="text-2xl text-gradient">
+            {selectedPlan ? `Book ${selectedPlan.name}` : "Book Your Demo Class"}
+          </CardTitle>
           <CardDescription>
             Fill in your details and we'll get back to you within 24 hours.
           </CardDescription>
