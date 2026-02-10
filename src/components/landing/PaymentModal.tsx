@@ -182,14 +182,12 @@ const PaymentModal = ({
                 variant="outline"
                 className="flex flex-col items-center gap-2 h-auto py-3"
                 onClick={() => {
-                  const amount = planName.includes("200") ? "200" : planName.includes("500") ? "500" : "12000";
-                  const upiUrl = `gpay://upi/pay?pa=${upiId}&pn=Solve%20%26%20Code&am=${amount}&cu=INR&tn=Payment%20for%20${encodeURIComponent(planName)}`;
+                  const amountValue = amount.replace(/[₹,]/g, ''); // Remove ₹ and commas
+                  const upiUrl = `gpay://upi/pay?pa=${upiId}&pn=Solve%20%26%20Code&am=${amountValue}&cu=INR&tn=Payment%20for%20${encodeURIComponent(planName)}`;
                   window.location.href = upiUrl;
                 }}
               >
-                <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xs">
-                  G
-                </div>
+                <img src="/gpay-logo.jpg" alt="GPay" className="w-10 h-10 object-contain" />
                 <span className="text-xs">GPay</span>
               </Button>
               
@@ -197,14 +195,12 @@ const PaymentModal = ({
                 variant="outline"
                 className="flex flex-col items-center gap-2 h-auto py-3"
                 onClick={() => {
-                  const amount = planName.includes("200") ? "200" : planName.includes("500") ? "500" : "12000";
-                  const upiUrl = `phonepe://pay?pa=${upiId}&pn=Solve%20%26%20Code&am=${amount}&cu=INR&tn=Payment%20for%20${encodeURIComponent(planName)}`;
+                  const amountValue = amount.replace(/[₹,]/g, ''); // Remove ₹ and commas
+                  const upiUrl = `phonepe://pay?pa=${upiId}&pn=Solve%20%26%20Code&am=${amountValue}&cu=INR&tn=Payment%20for%20${encodeURIComponent(planName)}`;
                   window.location.href = upiUrl;
                 }}
               >
-                <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-xs">
-                  P
-                </div>
+                <img src="/phone-pay-logo.png" alt="PhonePe" className="w-10 h-10 object-contain" />
                 <span className="text-xs">PhonePe</span>
               </Button>
               
@@ -212,14 +208,12 @@ const PaymentModal = ({
                 variant="outline"
                 className="flex flex-col items-center gap-2 h-auto py-3"
                 onClick={() => {
-                  const amount = planName.includes("200") ? "200" : planName.includes("500") ? "500" : "12000";
-                  const upiUrl = `paytmmp://pay?pa=${upiId}&pn=Solve%20%26%20Code&am=${amount}&cu=INR&tn=Payment%20for%20${encodeURIComponent(planName)}`;
+                  const amountValue = amount.replace(/[₹,]/g, ''); // Remove ₹ and commas
+                  const upiUrl = `paytmmp://pay?pa=${upiId}&pn=Solve%20%26%20Code&am=${amountValue}&cu=INR&tn=Payment%20for%20${encodeURIComponent(planName)}`;
                   window.location.href = upiUrl;
                 }}
               >
-                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs">
-                  P
-                </div>
+                <img src="/paytm-logo.png" alt="Paytm" className="w-10 h-10 object-contain" />
                 <span className="text-xs">Paytm</span>
               </Button>
             </div>
