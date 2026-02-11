@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/landing/Navbar";
 import HeroSection from "@/components/landing/HeroSection";
 import AboutSection from "@/components/landing/AboutSection";
@@ -15,6 +16,7 @@ import PaymentModal from "@/components/landing/PaymentModal";
 import { bookingsApi } from "@/lib/bookingsApi";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<{
     name: string;
@@ -23,6 +25,14 @@ const Index = () => {
   } | null>(null);
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
+  const [currentBookingData, setCurrentBookingData] = useState<{
+    name: string;
+    email: string;
+    phone: string;
+    date: string;
+    time: string;
+    language: string;
+  } | null>(null);
 
   const openBooking = (plan?: { name: string; price: string; qrCode: string }) => {
     if (plan) {
@@ -33,8 +43,18 @@ const Index = () => {
 
   const closeBooking = () => setIsBookingOpen(false);
 
-  const handleBookingSuccess = (bookingId: string) => {
+  const handleBookingSuccess = (bookingId: string, bookingData?: {
+    name: string;
+    email: string;
+    phone: string;
+    date: string;
+    time: string;
+    language: string;
+  }) => {
     setCurrentBookingId(bookingId);
+    if (bookingData) {
+      setCurrentBookingData(bookingData);
+    }
     setIsBookingOpen(false);
     // Open payment modal after booking form submission
     if (selectedPlan) {
@@ -49,12 +69,19 @@ const Index = () => {
 
     // Update booking with payment screenshot
     await bookingsApi.updatePaymentScreenshot(currentBookingId, screenshotUrl);
+    
+    // Redirect to thank-you page with booking details
+    if (currentBookingData) {
+      const params = new URLSearchParams(currentBookingData);
+      navigate(`/thank-you?${params.toString()}`);
+    }
   };
 
   const closePayment = () => {
     setIsPaymentOpen(false);
     setSelectedPlan(null);
     setCurrentBookingId(null);
+    setCurrentBookingData(null);
   };
 
   return (

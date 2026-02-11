@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -32,7 +33,14 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 interface BookingFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess?: (bookingId: string) => void;
+  onSuccess?: (bookingId: string, bookingData?: {
+    name: string;
+    email: string;
+    phone: string;
+    date: string;
+    time: string;
+    language: string;
+  }) => void;
   selectedPlan?: {
     name: string;
     price: string;
@@ -41,6 +49,7 @@ interface BookingFormProps {
 }
 
 const BookingForm = ({ isOpen, onClose, onSuccess, selectedPlan }: BookingFormProps) => {
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<BookingFormData>({
@@ -82,11 +91,24 @@ const BookingForm = ({ isOpen, onClose, onSuccess, selectedPlan }: BookingFormPr
       
       form.reset();
       
-      // Call onSuccess to trigger payment modal if a plan was selected
-      if (onSuccess) {
-        onSuccess(booking.id);
+      // Prepare booking data for thank-you page
+      const bookingData = {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        date: data.preferredDate,
+        time: data.preferredTime,
+        language: data.language,
+      };
+      
+      // If a paid plan was selected, trigger payment modal
+      if (onSuccess && selectedPlan) {
+        onSuccess(booking.id, bookingData);
       } else {
+        // For demo bookings, redirect to thank-you page with booking details
         onClose();
+        const params = new URLSearchParams(bookingData);
+        navigate(`/thank-you?${params.toString()}`);
       }
     } catch (error) {
       console.error("Booking error:", error);
@@ -97,9 +119,6 @@ const BookingForm = ({ isOpen, onClose, onSuccess, selectedPlan }: BookingFormPr
   };
 
   const timeSlots = [
-    "9:00 AM - 10:00 AM",
-    "10:00 AM - 11:00 AM",
-    "11:00 AM - 12:00 PM",
     "2:00 PM - 3:00 PM",
     "3:00 PM - 4:00 PM",
     "4:00 PM - 5:00 PM",
@@ -107,6 +126,7 @@ const BookingForm = ({ isOpen, onClose, onSuccess, selectedPlan }: BookingFormPr
     "6:00 PM - 7:00 PM",
     "7:00 PM - 8:00 PM",
     "8:00 PM - 9:00 PM",
+    "9:00 PM - 10:00 PM",
   ];
 
   const educationLevels = [
